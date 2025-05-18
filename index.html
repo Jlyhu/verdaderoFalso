@@ -119,6 +119,22 @@
             font-size: 24px;
             margin-bottom: 5px;
         }
+
+        .mensaje-final {
+            font-size: 32px;
+            color: var(--rojo-oscuro);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            animation: zoomIn 0.5s ease-out;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 </head>
@@ -190,7 +206,7 @@
             textoProgreso.textContent = `Pregunta ${preguntaActual + 1}/${preguntas.length}`;
         }
 
-        function manejarRespuesta(respuestaUsuario) {
+       function manejarRespuesta(respuestaUsuario) {
             const correcta = preguntas[preguntaActual].respuesta;
             const esCorrecto = respuestaUsuario === correcta;
             
@@ -203,10 +219,23 @@
                     preguntaActual++;
                     actualizarTarjeta();
                 } else {
-                    // Solo vaciamos la tarjeta sin mensaje
-                    tarjeta.innerHTML = "";
+                    // Mensaje final mejorado
+                    tarjeta.innerHTML = `
+                        <div class="mensaje-final">
+                            ¡Felicitaciones!<br>
+                            🎉🥳🎊
+                        </div>
+                    `;
+                    tarjeta.style.transform = "translateX(0)";
                     document.querySelector(".controles").remove();
                     document.querySelector(".progreso").remove();
+                    
+                    // Confeti final
+                    confetti({
+                        particleCount: 300,
+                        spread: 100,
+                        origin: { y: 0.6 }
+                    });
                 }
             }, 1500);
         }
