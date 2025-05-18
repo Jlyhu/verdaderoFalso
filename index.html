@@ -121,7 +121,7 @@
         }
 
         .mensaje-final {
-            font-size: 32px;
+            font-size: 48px; /* Tamaño aumentado */
             color: var(--rojo-oscuro);
             text-align: center;
             display: flex;
@@ -129,6 +129,7 @@
             justify-content: center;
             height: 100%;
             animation: zoomIn 0.5s ease-out;
+            font-weight: 900; /* Negrita agregada */
         }
 
         @keyframes zoomIn {
@@ -162,14 +163,14 @@
         </div>
     </div>
 
-    <div class="progreso">Pregunta 1/8</div>
+    <div class="progreso">Pregunta 1/10</div>
 
     <script>
         const preguntas = [
             { texto: "Todas las metas que se propone las cumple", respuesta: true },
             { texto: "Es muyyy tacaño", respuesta: false },
             { texto: "Va al gimnasio diario", respuesta: true },
-            { texto: "Nunca bota las gafas, siempre se las cuelga", respuesta: false }
+            { texto: "Nunca bota las gafas, siempre se las cuelga", respuesta: false },
             { texto: "Se acuesta muy juicioso a las 9 p.m., después de tomar una taza de leche caliente.", respuesta: false },
             { texto: "Hace ayunos intermitentes eternos", respuesta: true },
             { texto: "Hijo amoroso, padre orgulloso", respuesta: true },
@@ -184,16 +185,28 @@
         const modalFeedback = document.getElementById("modalFeedback");
         const feedbackImg = document.getElementById("feedbackImg");
 
-        function mostrarFeedback(esCorrecto) {
-            feedbackImg.src = esCorrecto ? 'pulgarArriba.jpg' : 'pulgarAbajo.jpg';
+        function mostrarFeedback(esVerdadero) {
+            // Mostrar imagen según si es verdadero (independiente de la respuesta correcta)
+            feedbackImg.src = esVerdadero ? 'pulgarArriba.jpg' : 'pulgarAbajo.jpg';
             modalFeedback.style.display = 'block';
             
-            if(esCorrecto) {
+            // Efectos diferentes
+            if(esVerdadero) {
+                // Confeti normal para verdaderos
                 confetti({
-                    particleCount: 100,
+                    particleCount: 150,
                     spread: 70,
                     origin: { y: 0.6 },
                     colors: ['#FF4444', '#C0392B', '#E74C3C']
+                });
+            } else {
+                // Confeti oscuro para falsos
+                confetti({
+                    particleCount: 100,
+                    spread: 50,
+                    origin: { y: 0.6 },
+                    colors: ['#2C3E50', '#34495E', '#7F8C8D'],
+                    scalar: 0.8
                 });
             }
 
@@ -208,11 +221,11 @@
             textoProgreso.textContent = `Pregunta ${preguntaActual + 1}/${preguntas.length}`;
         }
 
-       function manejarRespuesta(respuestaUsuario) {
-            const correcta = preguntas[preguntaActual].respuesta;
-            const esCorrecto = respuestaUsuario === correcta;
+        function manejarRespuesta(respuestaUsuario) {
+            const esVerdadero = preguntas[preguntaActual].respuesta;
             
-            mostrarFeedback(esCorrecto);
+            // Mostrar feedback basado en si la afirmación es verdadera (no en si acertó)
+            mostrarFeedback(preguntas[preguntaActual].respuesta);
             
             tarjeta.style.transform = `translateX(${respuestaUsuario ? "100%" : "-100%"})`;
             
@@ -221,7 +234,6 @@
                     preguntaActual++;
                     actualizarTarjeta();
                 } else {
-                    // Mensaje final mejorado
                     tarjeta.innerHTML = `
                         <div class="mensaje-final">
                             ¡Felicitaciones!<br>
@@ -232,11 +244,13 @@
                     document.querySelector(".controles").remove();
                     document.querySelector(".progreso").remove();
                     
-                    // Confeti final
+                    // Confeti final especial
                     confetti({
-                        particleCount: 300,
-                        spread: 100,
-                        origin: { y: 0.6 }
+                        particleCount: 500,
+                        spread: 150,
+                        origin: { y: 0.6 },
+                        colors: ['#FF4444', '#C0392B', '#E74C3C', '#F1C40F'],
+                        scalar: 1.2
                     });
                 }
             }, 1500);
