@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>¿Verdadero o Falso? - Edición Especial</title>
+    <title>¿Verdadero o Falso?</title>
     <style>
         :root {
             --rojo-principal: #E74C3C;
@@ -153,7 +153,7 @@
             { texto: "Todas las metas que se propone las cumple", respuesta: true },
             { texto: "Es muyyy tacaño", respuesta: false },
             { texto: "Va al gimnasio diario", respuesta: true },
-            { texto: "Tasa de leche", respuesta: false },
+            { texto: "Se duerme a las 9 p.m. con una taza de leche caliente."", respuesta: false },
             { texto: "Arruga la cara cuando lee porque no usa las gafas", respuesta: true },
             { texto: "Siempre llega a tiempo a todo", respuesta: false },
             { texto: "Siempre cree tener la razon", respuesta: true },
@@ -203,8 +203,10 @@
                     preguntaActual++;
                     actualizarTarjeta();
                 } else {
+                    // Solo vaciamos la tarjeta sin mensaje
                     tarjeta.innerHTML = "";
                     document.querySelector(".controles").remove();
+                    document.querySelector(".progreso").remove();
                 }
             }, 1500);
         }
