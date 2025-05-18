@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>¿Verdadero o Falso? - Edición Especial</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #f0f0f0;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .contenedor-juego {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 600px;
+            margin-top: 20px;
+        }
+
+        .tarjeta {
+            position: absolute;
+            width: 80%;
+            height: 65%;
+            left: 10%;
+            top: 10%;
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.6s, opacity 0.4s;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .controles {
+            position: absolute;
+            bottom: -80px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .boton-respuesta {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        #btnFalso {
+            background: #FF4444;
+        }
+
+        #btnCierto {
+            background: #4CAF50;
+        }
+
+        .feedback-img {
+            position: absolute;
+            width: 150px;
+            z-index: 100;
+            display: none;
+        }
+
+        .progreso {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .afirmacion {
+            font-size: 22px;
+            text-align: center;
+            margin: 20px;
+            line-height: 1.4;
+        }
+
+        .emoji {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>¿Verdadero o Falso? 🕶️</h1>
+    
+    <div class="contenedor-juego">
+        <div class="tarjeta">
+            <div class="afirmacion">Cargando...</div>
+        </div>
+        
+        <img src="pulgarArriba.jpg" class="feedback-img" id="bueno">
+        <img src="pulgarAbajo.jpg" class="feedback-img" id="malo">
+        
+        <div class="controles">
+            <button class="boton-respuesta" id="btnFalso">
+                <span class="emoji">❌</span>
+                FALSO
+            </button>
+            <button class="boton-respuesta" id="btnCierto">
+                <span class="emoji">✅</span>
+                CIERTO
+            </button>
+        </div>
+    </div>
+
+    <div class="progreso">Pregunta 1/20</div>
+
+    <script>
+        const preguntas = [
+            { texto: "Siempre saluda gritando.", respuesta: true },
+            { texto: "Se duerme a las 9 p.m. con una taza de leche caliente.", respuesta: false },
+            { texto: "Se acuesta en la madrugada… es noctámbulo.", respuesta: true },
+            { texto: "Le encanta hacer tours guiados de 4 horas por cada tienda.", respuesta: false },
+            // ... Agrega todas las demás afirmaciones aquí
+            { texto: "Le gustan los Doritos con Coca-Cola.", respuesta: true }
+        ];
+
+        let preguntaActual = 0;
+        const tarjeta = document.querySelector(".tarjeta");
+        const textoProgreso = document.querySelector(".progreso");
+        const feedbackBueno = document.getElementById("bueno");
+        const feedbackMalo = document.getElementById("malo");
+
+        function mostrarFeedback(esCorrecto) {
+            const feedback = esCorrecto ? feedbackBueno : feedbackMalo;
+            feedback.style.display = 'block';
+            feedback.style.left = `${Math.random() * 70 + 15}%`;
+            feedback.style.top = `${Math.random() * 40 + 30}%`;
+            
+            setTimeout(() => {
+                feedback.style.display = 'none';
+            }, 1000);
+        }
+
+        function actualizarTarjeta() {
+            tarjeta.style.transform = "translateX(0) rotate(0deg)";
+            tarjeta.style.opacity = "1";
+            tarjeta.querySelector(".afirmacion").textContent = preguntas[preguntaActual].texto;
+            textoProgreso.textContent = `Pregunta ${preguntaActual + 1}/${preguntas.length}`;
+        }
+
+        function manejarRespuesta(respuestaUsuario) {
+            const correcta = preguntas[preguntaActual].respuesta;
+            const esCorrecto = respuestaUsuario === correcta;
+            
+            mostrarFeedback(esCorrecto);
+            
+            tarjeta.style.transform = `translateX(${respuestaUsuario ? "100%" : "-100%"}) rotate(${respuestaUsuario ? 20 : -20}deg)`;
+            tarjeta.style.opacity = "0.5";
+            
+            setTimeout(() => {
+                if(preguntaActual < preguntas.length - 1) {
+                    preguntaActual++;
+                    actualizarTarjeta();
+                } else {
+                    tarjeta.innerHTML = "<h2 style='text-align:center'>¡Juego completado! 🎉<br><br>¿Cuántas acertaste?</h2>";
+                    document.querySelector(".controles").remove();
+                }
+            }, 1200);
+        }
+
+        // Event listeners
+        document.getElementById("btnFalso").addEventListener("click", () => manejarRespuesta(false));
+        document.getElementById("btnCierto").addEventListener("click", () => manejarRespuesta(true));
+
+        // Inicializar
+        actualizarTarjeta();
+    </script>
+</body>
+</html>
