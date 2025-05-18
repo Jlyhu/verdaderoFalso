@@ -108,11 +108,12 @@
         }
 
         .afirmacion {
-            font-size: 22px;
+            font-size: 28px; /* Tamaño aumentado */
             text-align: center;
             margin: 20px;
             line-height: 1.4;
             color: var(--rojo-oscuro);
+            font-weight: 900; /* Negrita agregada */
         }
 
         .emoji {
@@ -121,7 +122,7 @@
         }
 
         .mensaje-final {
-            font-size: 48px; /* Tamaño aumentado */
+            font-size: 48px;
             color: var(--rojo-oscuro);
             text-align: center;
             display: flex;
@@ -129,7 +130,7 @@
             justify-content: center;
             height: 100%;
             animation: zoomIn 0.5s ease-out;
-            font-weight: 900; /* Negrita agregada */
+            font-weight: 900;
         }
 
         @keyframes zoomIn {
@@ -185,14 +186,11 @@
         const modalFeedback = document.getElementById("modalFeedback");
         const feedbackImg = document.getElementById("feedbackImg");
 
-        function mostrarFeedback(esVerdadero) {
-            // Mostrar imagen según si es verdadero (independiente de la respuesta correcta)
-            feedbackImg.src = esVerdadero ? 'pulgarArriba.jpg' : 'pulgarAbajo.jpg';
+        function mostrarFeedback(esCorrecto) {
+            feedbackImg.src = esCorrecto ? 'pulgarArriba.jpg' : 'pulgarAbajo.jpg';
             modalFeedback.style.display = 'block';
             
-            // Efectos diferentes
-            if(esVerdadero) {
-                // Confeti normal para verdaderos
+            if(esCorrecto) {
                 confetti({
                     particleCount: 150,
                     spread: 70,
@@ -200,7 +198,6 @@
                     colors: ['#FF4444', '#C0392B', '#E74C3C']
                 });
             } else {
-                // Confeti oscuro para falsos
                 confetti({
                     particleCount: 100,
                     spread: 50,
@@ -222,10 +219,10 @@
         }
 
         function manejarRespuesta(respuestaUsuario) {
-            const esVerdadero = preguntas[preguntaActual].respuesta;
+            const correcta = preguntas[preguntaActual].respuesta;
+            const esCorrecto = respuestaUsuario === correcta;
             
-            // Mostrar feedback basado en si la afirmación es verdadera (no en si acertó)
-            mostrarFeedback(preguntas[preguntaActual].respuesta);
+            mostrarFeedback(esCorrecto);
             
             tarjeta.style.transform = `translateX(${respuestaUsuario ? "100%" : "-100%"})`;
             
@@ -244,7 +241,6 @@
                     document.querySelector(".controles").remove();
                     document.querySelector(".progreso").remove();
                     
-                    // Confeti final especial
                     confetti({
                         particleCount: 500,
                         spread: 150,
@@ -256,11 +252,9 @@
             }, 1500);
         }
 
-        // Event listeners
         document.getElementById("btnFalso").addEventListener("click", () => manejarRespuesta(false));
         document.getElementById("btnCierto").addEventListener("click", () => manejarRespuesta(true));
 
-        // Inicializar
         actualizarTarjeta();
     </script>
 </body>
