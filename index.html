@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>¿Verdadero o Falso? - Edición Premium</title>
+    <title>¿Verdadero o Falso? - Edición Especial</title>
     <style>
         :root {
             --rojo-principal: #E74C3C;
@@ -119,19 +119,11 @@
             font-size: 24px;
             margin-bottom: 5px;
         }
-
-        .confeti {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 999;
-        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-    <h1 style="color: var(--rojo-oscuro);">¿Verdadero o Falso?</h1>
+    <h1 style="color: var(--rojo-oscuro);">¿Verdadero o Falso? 🔍</h1>
     
     <div class="contenedor-juego">
         <div class="tarjeta">
@@ -154,7 +146,7 @@
         </div>
     </div>
 
-    <div class="progreso">Pregunta 1/20</div>
+    <div class="progreso">Pregunta 1/8</div>
 
     <script>
         const preguntas = [
@@ -180,7 +172,7 @@
             
             if(esCorrecto) {
                 confetti({
-                    particleCount: 150,
+                    particleCount: 100,
                     spread: 70,
                     origin: { y: 0.6 },
                     colors: ['#FF4444', '#C0392B', '#E74C3C']
