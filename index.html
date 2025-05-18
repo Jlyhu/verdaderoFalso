@@ -2,14 +2,20 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>¿Verdadero o Falso? - Edición Especial</title>
+    <title>¿Verdadero o Falso? - Edición Premium</title>
     <style>
+        :root {
+            --rojo-principal: #E74C3C;
+            --rojo-oscuro: #C0392B;
+            --rojo-claro: #F9EBEA;
+        }
+
         body {
             font-family: 'Arial', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: #f0f0f0;
+            background: var(--rojo-claro);
             margin: 0;
             min-height: 100vh;
         }
@@ -36,9 +42,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: transform 0.6s, opacity 0.4s;
+            transition: transform 0.6s;
             cursor: grab;
             user-select: none;
+            border: 3px solid var(--rojo-principal);
         }
 
         .controles {
@@ -54,37 +61,49 @@
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            border: none;
+            border: 3px solid var(--rojo-principal);
+            background: white;
+            color: var(--rojo-principal);
             font-size: 16px;
             font-weight: bold;
-            color: white;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
         }
 
-        #btnFalso {
-            background: #FF4444;
+        .boton-respuesta:hover {
+            background: var(--rojo-principal);
+            color: white;
         }
 
-        #btnCierto {
-            background: #4CAF50;
-        }
-
-        .feedback-img {
-            position: absolute;
-            width: 150px;
-            z-index: 100;
+        .modal-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            text-align: center;
             display: none;
+            z-index: 1000;
+            border: 3px solid var(--rojo-principal);
+        }
+
+        .modal-img {
+            width: 200px;
+            height: auto;
+            margin: 15px 0;
         }
 
         .progreso {
             margin-top: 20px;
             font-size: 20px;
-            color: #333;
+            color: var(--rojo-oscuro);
             font-weight: bold;
         }
 
@@ -93,24 +112,35 @@
             text-align: center;
             margin: 20px;
             line-height: 1.4;
+            color: var(--rojo-oscuro);
         }
 
         .emoji {
             font-size: 24px;
             margin-bottom: 5px;
         }
+
+        .confeti {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-    <h1>¿Verdadero o Falso? 🕶️</h1>
+    <h1 style="color: var(--rojo-oscuro);">¿Verdadero o Falso? 🔥</h1>
     
     <div class="contenedor-juego">
         <div class="tarjeta">
             <div class="afirmacion">Cargando...</div>
         </div>
         
-        <img src="pulgarArriba.jpg" class="feedback-img" id="bueno">
-        <img src="pulgarAbajo.jpg" class="feedback-img" id="malo">
+        <div class="modal-feedback" id="modalFeedback">
+            <img class="modal-img" id="feedbackImg">
+        </div>
         
         <div class="controles">
             <button class="boton-respuesta" id="btnFalso">
@@ -128,34 +158,54 @@
 
     <script>
         const preguntas = [
-            { texto: "Siempre saluda gritando.", respuesta: true },
-            { texto: "Se duerme a las 9 p.m. con una taza de leche caliente.", respuesta: false },
-            { texto: "Se acuesta en la madrugada… es noctámbulo.", respuesta: true },
-            { texto: "Le encanta hacer tours guiados de 4 horas por cada tienda.", respuesta: false },
-            // ... Agrega todas las demás afirmaciones aquí
-            { texto: "Le gustan los Doritos con Coca-Cola.", respuesta: true }
+            { texto: "✅ Siempre saluda gritando.", respuesta: true },
+            { texto: "❌ Se duerme a las 9 p.m. con una taza de leche caliente.", respuesta: false },
+            { texto: "✅ Se acuesta en la madrugada… es noctámbulo.", respuesta: true },
+            { texto: "❌ Le encanta hacer tours guiados de 4 horas por cada tienda.", respuesta: false },
+            { texto: "✅ Siempre está en dieta estricta.", respuesta: true },
+            { texto: "✅ Mastica chicle todo el tiempo.", respuesta: true },
+            { texto: "❌ Jamás pierde las gafas, las tiene colgadas con un cordón especial.", respuesta: false },
+            { texto: "✅ Ama y admira a su mamá muchísimo.", respuesta: true },
+            { texto: "❌ Nunca arruga la cara leyendo porque siempre usa gafas LED.", respuesta: false },
+            { texto: "✅ Su marca preferida de tenis es Nike y le fascinan los colores encendidos.", respuesta: true },
+            { texto: "❌ No le gustan los snacks, solo come alimentos orgánicos.", respuesta: false },
+            { texto: "✅ Siempre cree tener la razón.", respuesta: true },
+            { texto: "❌ Es cero vanidoso, jamás se mira en un espejo.", respuesta: false },
+            { texto: "✅ Va al gimnasio diario.", respuesta: true },
+            { texto: "✅ Es un padre amoroso.", respuesta: true },
+            { texto: "❌ Su color favorito es el fucsia con estampado de cebra.", respuesta: false },
+            { texto: "✅ Bota las gafas todo el tiempo.", respuesta: true },
+            { texto: "❌ Siempre llega 15 minutos antes a todo.", respuesta: false },
+            { texto: "✅ Tiene rutinas de belleza.", respuesta: true },
+            { texto: "✅ Le gustan los Doritos con Coca-Cola.", respuesta: true }
         ];
 
         let preguntaActual = 0;
         const tarjeta = document.querySelector(".tarjeta");
         const textoProgreso = document.querySelector(".progreso");
-        const feedbackBueno = document.getElementById("bueno");
-        const feedbackMalo = document.getElementById("malo");
+        const modalFeedback = document.getElementById("modalFeedback");
+        const feedbackImg = document.getElementById("feedbackImg");
 
         function mostrarFeedback(esCorrecto) {
-            const feedback = esCorrecto ? feedbackBueno : feedbackMalo;
-            feedback.style.display = 'block';
-            feedback.style.left = `${Math.random() * 70 + 15}%`;
-            feedback.style.top = `${Math.random() * 40 + 30}%`;
+            feedbackImg.src = esCorrecto ? 'pulgarArriba.jpg' : 'pulgarAbajo.jpg';
+            modalFeedback.style.display = 'block';
             
+            if(esCorrecto) {
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#FF4444', '#C0392B', '#E74C3C']
+                });
+            }
+
             setTimeout(() => {
-                feedback.style.display = 'none';
-            }, 1000);
+                modalFeedback.style.display = 'none';
+            }, 1500);
         }
 
         function actualizarTarjeta() {
-            tarjeta.style.transform = "translateX(0) rotate(0deg)";
-            tarjeta.style.opacity = "1";
+            tarjeta.style.transform = "translateX(0)";
             tarjeta.querySelector(".afirmacion").textContent = preguntas[preguntaActual].texto;
             textoProgreso.textContent = `Pregunta ${preguntaActual + 1}/${preguntas.length}`;
         }
@@ -166,18 +216,17 @@
             
             mostrarFeedback(esCorrecto);
             
-            tarjeta.style.transform = `translateX(${respuestaUsuario ? "100%" : "-100%"}) rotate(${respuestaUsuario ? 20 : -20}deg)`;
-            tarjeta.style.opacity = "0.5";
+            tarjeta.style.transform = `translateX(${respuestaUsuario ? "100%" : "-100%"})`;
             
             setTimeout(() => {
                 if(preguntaActual < preguntas.length - 1) {
                     preguntaActual++;
                     actualizarTarjeta();
                 } else {
-                    tarjeta.innerHTML = "<h2 style='text-align:center'>¡Juego completado! 🎉<br><br>¿Cuántas acertaste?</h2>";
+                    tarjeta.innerHTML = "<h2 style='text-align:center; color: var(--rojo-oscuro);'>¡Juego completado! 🎉<br><br>Resultados finales</h2>";
                     document.querySelector(".controles").remove();
                 }
-            }, 1200);
+            }, 1500);
         }
 
         // Event listeners
